@@ -263,7 +263,14 @@ def _get_version_pkginfo():
     filename = join(dirname(abspath(__file__)), 'PKG-INFO')
     if exists(filename):
         re_ver = re.compile(r'^Version: \s+ (\d+)\.(\d+)\.(\d+) (?: b(\d+))?', re.VERBOSE)
+        re_j5_ver = re.compile(r'^Version: \s+ (\d+)\.(\d+)\.(\d+)\+j5\.(\d+)dev?', re.VERBOSE)
         for line in open(filename):
+            match = re_j5_ver.search(line)
+            if match:
+                name = line.split(':', 1)[1].strip()
+                numbers = [int(n or 0) for n in match.groups()[:3]]
+                numbers.append(int(match.group(4) or OFFICIAL_BUILD))  # don't use 0 as a default for build
+                return name, numbers
             match = re_ver.search(line)
             if match:
                 name    = line.split(':', 1)[1].strip()
